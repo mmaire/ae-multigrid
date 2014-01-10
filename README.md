@@ -54,7 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 External Dependencies
 ---------------------
 
-The image segmentation demo relies on local contour cues computing using the
+The image segmentation demo relies on local contour cues computed using the
 Berkeley contour detector (Pb).  A version of this software is included in the
 `grouping/` subdirectory.  For more information see:
 
