@@ -4,9 +4,9 @@ Multigrid Angular Embedding Eigensolver
 This software implements the multigrid eigensolver described in:
 
 > [Progressive Multigrid Eigensolvers for Multiscale Spectral Segmentation]
-> (http://vision.caltech.edu/~mmaire/papers/pdf/seg_multigrid_iccv2013.pdf)
-> Michael Maire and Stella X. Yu
-> International Conference on Computer Vision (ICCV), 2013
+> (http://vision.caltech.edu/~mmaire/papers/pdf/seg_multigrid_iccv2013.pdf)  
+> Michael Maire and Stella X. Yu  
+> International Conference on Computer Vision (ICCV), 2013  
 
 Demo
 ----
