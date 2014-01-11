@@ -61,6 +61,7 @@
 %       reorth_flag    - reorthonormalize within eigensolver?  (default: false)
 %       transform_flag - use constraints to transform weights? (default: false)
 %       disp           - show status display?                  (default: false)
+%       use_ispc       - use ispc for fast sparse matrix ops?  (default: false)
 %
 % Output:
 %    evecs          - (sum(ne) x m) eigenvectors
@@ -99,7 +100,8 @@ function [evecs evals info] = ae_multigrid(C_arr, Theta_arr, U_arr, m, opts)
          'tol_err',        10.^-2, ...
          'reorth_flag',    false, ...
          'transform_flag', false, ...
-         'disp',           false ...
+         'disp',           false, ...
+         'use_ispc',       false ...
       );
       % return default options
       evecs = opts_def;
@@ -177,10 +179,22 @@ function [evecs evals info] = ae_multigrid(C_arr, Theta_arr, U_arr, m, opts)
       % check whether current subproblem is constrained
       if (isempty(U_bar))
          % eigensolver matrix application function is diffusion
-         f = @(z) ae_diffuse(P, z);
+         if (opts.use_ispc)
+            P_csr = sp2csr(P);
+            f = @(z) ae_diffuse_ispc(P_csr, z);
+         else
+            f = @(z) ae_diffuse(P, z);
+         end
       else
          % eigensolver matrix application function is diffusion + projection
-         f = @(z) ae_diffuse_project(P, U_bar, R, z);
+         if (opts.use_ispc)
+            P_csr      = sp2csr(P);
+            U_bar_csr  = sp2csr(U_bar);
+            U_barp_csr = sp2csr(U_bar');
+            f = @(z) ae_diffuse_project_ispc(P_csr, U_bar_csr, U_barp_csr, R, z);
+         else
+            f = @(z) ae_diffuse_project(P, U_bar, R, z);
+         end
       end
       % get starting number of iterations to run at current level
       k_curr = k(s);
@@ -281,6 +295,10 @@ function y = ae_diffuse(P, z)
    y = P * z;
 end
 
+function y = ae_diffuse_ispc(P, z)
+   y = spmul(P, z);
+end
+
 % Apply AE diffusion and projection operation to a set of column vectors.
 %
 % Input:
@@ -295,4 +313,10 @@ function y = ae_diffuse_project(P, U_bar, R, z)
    y = z - U_bar * (R \ (R' \ (U_bar' * z)));
    z = P * y;
    y = z - U_bar * (R \ (R' \ (U_bar' * z)));
+end
+
+function y = ae_diffuse_project_ispc(P, U_bar, U_barp, R, z)
+   y = z - spmul(U_bar, (R \ (R' \ (spmul(U_barp, z)))));
+   z = spmul(P, z);
+   y = z - spmul(U_bar, (R \ (R' \ (spmul(U_barp, z)))));
 end
