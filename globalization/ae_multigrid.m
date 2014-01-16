@@ -308,15 +308,13 @@ end
 %    z     - (ne x c)  matrix of c column vectors
 %
 % Output:
-%    y = (I - U_bar*(R \ R' \ U_bar')) * P * (I - U_bar*(R \ R' \ U_bar')) * z
+%    y = (I - U_bar*(R \ R' \ U_bar')) * P * z
 function y = ae_diffuse_project(P, U_bar, R, z)
-   y = z - U_bar * (R \ (R' \ (U_bar' * z)));
-   z = P * y;
+   z = P * z;
    y = z - U_bar * (R \ (R' \ (U_bar' * z)));
 end
 
 function y = ae_diffuse_project_ispc(P, U_bar, U_barp, R, z)
-   y = z - spmul(U_bar, (R \ (R' \ (spmul(U_barp, z)))));
-   z = spmul(P, z);
-   y = z - spmul(U_bar, (R \ (R' \ (spmul(U_barp, z)))));
+   z = spmul_noflip(P, z);
+   y = (z - spmul_noflip(U_bar, (R \ (R' \ (spmulp(U_barp, z)))))).';
 end

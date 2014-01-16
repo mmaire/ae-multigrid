@@ -12,8 +12,10 @@ opts = struct( ...
    'tol_err', 10.^-2, ...
    'disp', true ...
 );
-% uncomment this line to use ISPC sparse matrix * dense matrix implementation
-%opts.use_ispc = 1;
+% use ISPC
+opts.use_ispc = 1;
+% increase tolerance
+opts.tol_err = 0.1;
 tic;
 [evecs evals info] = ae_multigrid(C_arr, Theta_arr, U_arr, 16, opts);
 time = toc;
