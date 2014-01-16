@@ -21,6 +21,18 @@ divisible by 2^(s-1), where s is the number of pyramid levels.  See the
 included `multiscale_resize.m` function for padding arbitrary images to the
 nearest efficient size.
 
+ISPC
+----
+
+The `ispc/` subdirectory contains a sparse matrix times dense matrix multiply
+routine that is significantly faster than Matlab's built-in operation on
+machines supporting the AVX instruction set (most processors released in
+2011 or later).
+
+Uncomment `use_ispc = 1;` in `demo.m` to use this implementation.  It relies
+on an included precompiled Linux mex file.  To compile for other architectures,
+download ISPC from <http://ispc.github.io/> and run `build.sh`.
+
 Citation
 --------
 

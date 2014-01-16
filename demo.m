@@ -12,7 +12,12 @@ opts = struct( ...
    'tol_err', 10.^-2, ...
    'disp', true ...
 );
-[evecs evals info] = ae_multigrid(C_arr, Theta_arr, U_arr, 32, opts);
+% uncomment this line to use ISPC sparse matrix * dense matrix implementation
+%opts.use_ispc = 1;
+tic;
+[evecs evals info] = ae_multigrid(C_arr, Theta_arr, U_arr, 16, opts);
+time = toc;
+disp(['Wall clock time for eigensolver: ' num2str(time) ' seconds']);
 % spectral pb extraction from eigenvectors
 [spb_arr spbo_arr spb spbo spb_nmax] = multiscale_spb(evecs, evals, pb_arr);
 % display spectral pb results
