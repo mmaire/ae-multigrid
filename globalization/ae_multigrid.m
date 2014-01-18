@@ -317,6 +317,6 @@ end
 
 function y = ae_diffuse_project_ispc(P, U_bar, U_barp, R, z)
    y = z - spmul(U_bar, (R \ (R' \ (spmul(U_barp, z)))));
-   z = spmul(P, z);
+   z = spmul(P, y);
    y = z - spmul(U_bar, (R \ (R' \ (spmul(U_barp, z)))));
 end
