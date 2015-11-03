@@ -31,6 +31,14 @@ function ae_mx = ae_subproblem_fold(ae_prob, tol_ichol, transform_flag)
    if ((nargin < 3) || isempty(transform_flag))
       transform_flag = opts_def.transform_flag;
    end
+   % incomplete Cholesky options
+   opts_ichol = struct( ...
+      'type',     'ict', ...
+      'droptol',  tol_ichol, ...
+      'michol',   'off', ...
+      'diagcomp', 0, ...
+      'shape',    'upper' ...
+   );
    % unpack problem data structure
    ne         = ae_prob.ne;
    ne_cum     = ae_prob.ne_cum;
@@ -77,7 +85,7 @@ function ae_mx = ae_subproblem_fold(ae_prob, tol_ichol, transform_flag)
          % degree-normalize constraint matrix
          U = D_sqrt_inv * U;
          % factor constraint product using incomplete Cholesky
-         R = cholinc(U' * U, tol_ichol);
+         R = ichol(U' * U, opts_ichol);
          % store active constraints for current pyramid level
          U_arr{s} = U;
          R_arr{s} = R;
@@ -104,7 +112,7 @@ function ae_mx = ae_subproblem_fold(ae_prob, tol_ichol, transform_flag)
             neb - nea, nu_arr(s) ...
          );
          % factor lower constraint block product using incomplete Cholesky
-         Rb_arr{s} = cholinc(Ub' * Ub, tol_ichol);
+         Rb_arr{s} = ichol(Ub' * Ub, opts_ichol);
          % form upper and lower diagonal degree transformation matrices
          dval_sqrt_inv = spdiags(D_sqrt_inv, 0);
          dval_sqrt     = spdiags(D_sqrt, 0);
@@ -116,7 +124,7 @@ function ae_mx = ae_subproblem_fold(ae_prob, tol_ichol, transform_flag)
          % check if transforming weights
          if (transform_flag)
             % factor upper constraint block product using incomplete Cholesky
-            Ra = cholinc(Ua' * Ua, tol_ichol);
+            Ra = ichol(Ua' * Ua, opts_ichol);
             % break weight matrix into upper and lower blocks
             [wi wj wval] = find(W);
             indsWa = find((wi <= nea) & (wj <= nea)); % W upper diagonal block
