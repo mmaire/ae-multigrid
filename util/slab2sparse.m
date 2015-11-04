@@ -5,7 +5,7 @@
 %
 % Input:
 %    slab    - (sx x sy x nc) feature map, nc = number of channels
-%    stencil - (nn x 2) offset stencil,    nn = number of neighbors
+%    stencil - (nc x 2) offset stencil
 %
 % Output:
 %    smx     - (sx*sy) x (sx*sy) sparse matrix of pairwise relationships
@@ -13,19 +13,12 @@ function [smx] = slab2sparse(slab, stencil)
    % get slab dimensions
    [sx sy nc] = size(slab);
    np = sx.*sy;
-   % get stencil size
+   % check stencil size
    if (nc ~= size(stencil,1))
-      error('size mistmatch between slab and stencil');
+      error('size mismatch between slab and stencil');
    end
-   % convert stencil to channel offset vector
-   dx = stencil(:,1);
-   dy = stencil(:,2);
-   offsets = dx + sx.*dy;
-   % create offset slab
-   offset_slab = repmat(reshape(offsets,[1 1 nc]),[sx sy]);
    % create source and destination index slabs
-   idx_src = repmat(reshape(1:np,[sx sy]),[1 1 nc]);
-   idx_dst = idx_src + offset_slab;
+   [idx_src idx_dst] = stencil2idx([sx sy nc], stencil);
    % reshape slabs
    ni = np.*nc;
    idx_src = reshape(idx_src,[ni 1]);
