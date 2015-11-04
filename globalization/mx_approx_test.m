@@ -18,5 +18,5 @@ function [err E] = mx_approx_test(Al, Ar)
    % compute error matrix
    E = Ar - Al * (Al' * Ar);
    % compute error bound
-   err = max(sqrt(sum(E.*E, 1)));
+   err = max(sqrt(sum(conj(E).*E, 1)));
 end
