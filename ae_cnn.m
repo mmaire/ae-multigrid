@@ -7,12 +7,43 @@ function [ae] = ae_cnn(b_pred, fg_pred, stencil, sigma_b, sigma_fg)
    stencil(:,2) = -stencil(:,2);
    % extract CNN probabilities from raw prediction value
    b_prob = 1 - b_pred;             % boundary probability
-   %FIXME: figure/ground
-   % convert CNN probabilities to confidence
-   Cb = exp(-b_prob ./ sigma_b);    % binding force
-   %FIXME: figure/ground
-   % build sparse affinity matrix for confidence
-   Cmx = slab2sparse(Cb, stencil);
+   f_prob = 1 - 2.*fg_pred;         % figure probability
+   g_prob = 2.*fg_pred - 1;         % ground probability
+   % clip figure/ground probabilities
+   f_prob = f_prob.*(f_prob > 0);
+   g_prob = g_prob.*(g_prob > 0);
+   % convert CNN probabilities to error probability
+   Eb = b_prob;
+   Ef = f_prob;
+   Eg = g_prob;
+   % hack - don't trust immediate neighbors
+   Ef(:,:,1:16) = 1;
+   Eg(:,:,1:16) = 1;
+   % convert error probability to confidence
+   Cb = exp(-Eb ./ sigma_b);           % binding force
+   Cf = (1-Cb).*exp(-Ef ./ sigma_fg);  % ground -> figure transition force
+   Cg = (1-Cb).*exp(-Eg ./ sigma_fg);  % figure -> ground transition force
+   % hack - get a per-pixel boundary map
+   %bmap = mean(b_prob
+   % define figure/ground rotational constant
+   phi = pi./16;
+   % compute generalized affinity
+   W_slab = Cb + Cf.*exp(i.*phi) + Cg.*exp(-i.*phi);
+   % build sparse affinity matrix
+   W_mx = slab2sparse(W_slab, stencil);
+   % extract magnitude and argument
+   C_mx = abs(W_mx);
+   T_mx = angle(W_mx);
+   % compress rotational action
+   %rot_total = sum(abs(T_mx(:)));
+   %rot_scale = (pi./2)./rot_total;
+   % rescale rotation component
+   %Theta_mx = T_mx.*rot_scale;
+   Theta_mx = T_mx;
+   % assemble angular embedding problem
+   C_arr     = { C_mx };
+   Theta_arr = { Theta_mx };
+   U_arr     = { [] };
    % eigensolver options
    opts = struct( ...
       'k', [1 1 1], ...
@@ -20,25 +51,27 @@ function [ae] = ae_cnn(b_pred, fg_pred, stencil, sigma_b, sigma_fg)
       'tol_err', 10.^-2, ...
       'disp', true ...
    );
-   % assemble multiscale input
-   C_arr     = { Cmx };
-   Theta_arr = { [] };
-   U_arr     = { [] };
    % eigensolver
    tic;
    [evecs evals info] = ae_multigrid(C_arr, Theta_arr, U_arr, 16, opts);
    time = toc;
    disp(['Wall clock time for eigensolver: ' num2str(time) ' seconds']);
-   % spectral boundary extraction
-   [spb_arr spbo_arr spb spbo spb_nmax] = multiscale_spb( ...
-      evecs, evals, { zeros([size(b_pred,1) size(b_pred,2)]) } ...
+   % spectral boundary extraction - real
+   [rspb_arr rspbo_arr rspb rspbo rspb_nmax] = multiscale_spb( ...
+      real(evecs), ...
+      abs(evals), ...
+      { zeros([size(b_pred,1) size(b_pred,2)]) } ...
    );
+   % spectral boundary extraction - imag
+   [ispb_arr ispbo_arr ispb ispbo ispb_nmax] = multiscale_spb( ...
+      imag(evecs), ...
+      abs(evals), ...
+      { zeros([size(b_pred,1) size(b_pred,2)]) } ...
+   );
+   spb = rspb + ispb;
    % return data
    ae = struct( ...
-      'spb_arr',  {spb_arr}, ...
-      'spbo_arr', {spbo_arr}, ...
-      'spb',      {spb}, ...
-      'spbo',     {spbo}, ...
-      'spb_nmax', {spb_nmax} ...
+      'fg',  {reshape(angle(evecs(:,1)), [size(b_pred,1) size(b_pred,2)])}, ...
+      'spb', {spb} ...
    );
 end
