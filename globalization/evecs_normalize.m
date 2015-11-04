@@ -12,6 +12,6 @@ function evecs = normalize_evecs(evecs)
    [ne nv] = size(evecs);
    for n = 1:nv
       a = abs(evecs(:,n));
-      evecs(:,n) = evecs(:,n)./max(a(:));
+      evecs(:,n) = evecs(:,n)./(max(a(:)) + eps);
    end
 end
