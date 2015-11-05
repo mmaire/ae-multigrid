@@ -1,10 +1,11 @@
 dset = 'res_bsds_testfg';
 %dset = 'res_bsds_train';
 
-imname = '100080';
+%imname = '23025';
+imname = '28075';
+%imname = '100080';
 %imname = '41004';
 %imname = '135069';
-
 
 X = load(['../data/' dset '/contour/' imname '.mat']);
 F = load(['../data/' dset '/figure-ground/' imname '.mat']);

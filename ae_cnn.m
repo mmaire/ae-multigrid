@@ -28,6 +28,8 @@ function [ae] = ae_cnn(b_pred, fg_pred, stencil, sigma_b, sigma_fg)
    % generalized affinity
    W_slab = Cb + Cf.*exp(i.*phi) + Cg.*exp(-i.*phi);
    W_mx = slab2sparse(W_slab, stencil);
+   % symmetrize affinity
+   W_mx = sparse_symmetrize(W_mx, 'amean');
    % extract magnitude and argument
    C_mx = abs(W_mx);
    T_mx = angle(W_mx);
