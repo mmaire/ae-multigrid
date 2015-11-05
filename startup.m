@@ -9,6 +9,8 @@ function startup
    addpath(fullfile(wd,'globalization'));
    % ispc
    addpath(fullfile(wd,'ispc'));
+   % scripts
+   addpath(fullfile(wd,'scripts'));
    % utilities
    addpath(fullfile(wd,'util'));
 end
