@@ -23,11 +23,11 @@ function aev = ae_vis(ae)
    evecs   = evecs(:,inds(end:-1:1));
    evals   = evals(inds(end:-1:1));
    % compute edges (exclude first evec)
-   evecs2 = evecs(:,2:end);
+   evecs2 = evecs(:,1:end);
    evecs2 = evecs_normalize(evecs2);
-   evecs2 = reshape(evecs2,[sx sy 1 (nvec-1)]);
-   [er2 ero2] = evecs_to_edges(real(evecs2),weights(2:end));
-   [ei2 eio2] = evecs_to_edges(imag(evecs2),weights(2:end));
+   evecs2 = reshape(evecs2,[sx sy 1 (nvec)]);
+   [er2 ero2] = evecs_to_edges(real(evecs2),weights(1:end));
+   [ei2 eio2] = evecs_to_edges(imag(evecs2),weights(1:end));
    e2  = sqrt(er2.*er2 + ei2.*ei2);
    eo2 = sqrt(ero2.*ero2 + eio2.*eio2);
    % normalize edges
