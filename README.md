@@ -4,17 +4,17 @@ Multigrid Angular Embedding Eigensolver
 This software implements the multigrid eigensolver described in:
 
 > [Progressive Multigrid Eigensolvers for Multiscale Spectral Segmentation]
-> (http://ttic.uchicago.edu/~mmaire/papers/pdf/seg_multigrid_iccv2013.pdf)
-> Michael Maire and Stella X. Yu
-> International Conference on Computer Vision (ICCV), 2013
+> (http://ttic.uchicago.edu/~mmaire/papers/pdf/seg_multigrid_iccv2013.pdf)  
+> Michael Maire and Stella X. Yu  
+> International Conference on Computer Vision (ICCV), 2013  
 
 It also serves as a core component of the simultaneous segmentation and
 figure/ground organization system described in:
 
 > [Affinity CNN: Learning Pixel-Centric Pairwise Relations for Figure/Ground Embedding]
-> (http://arxiv.org/abs/1512.02767)
-> Michael Maire, Takuya Narihira, and Stella X. Yu
-> Computer Vision and Pattern Recognition (CVPR), 2016
+> (http://arxiv.org/abs/1512.02767)  
+> Michael Maire, Takuya Narihira, and Stella X. Yu  
+> Computer Vision and Pattern Recognition (CVPR), 2016  
 
 Demo - Multiscale Segmentation (ICCV 2013)
 ------------------------------------------
@@ -24,7 +24,7 @@ Run `demo.m` from MATLAB for a multiscale image segmentation demo.
 Demo - Figure/Ground (CVPR 2016)
 --------------------------------
 
-Run `ae_cnn_demo.m` from MATLAB for a segmentation+figure/ground demo.
+Run `ae_cnn_demo.m` from MATLAB for a segmentation+figure/ground demo.  
 Note that this demo runs in single-grid compute mode.
 
 See `util/bench_fg.m` for figure/ground benchmark evaluation code.
