@@ -61,6 +61,15 @@ If you make use of this software, please cite the following in any publications:
         year      = {2013}
     }
 
+If you make use of our figure/ground component, please also cite:
+
+    @inproceedings{MNY:CVPR:2016,
+        title     = {Affinity CNN: Learning Pixel-Centric Pairwise Relations for Figure/Ground Embedding},
+        author    = {Michael Maire and Takuya Narihira and Stella X. Yu},
+        booktitle = {Computer Vision and Pattern Recognition (CVPR)},
+        year      = {2016}
+    }
+
 License
 -------
 
